@@ -1,0 +1,73 @@
+Details of the EyeLab screen geometry are given at:
+http://dokuwiki/doku.php?id=eyelab:screen_geometry
+
+The key physical screen dimensions are: 1574 mm wide × 877 mm high, distance from eye = 1649 mm.
+The pixel dimensions are: 1280 wide × 720 high.
+
+
+
+VARIABLES:
+
+distance As double
+    Eye-to-screen distance in mm
+
+width As double
+    Physical width of the display in mm
+
+height As double
+    Physical height of the display in mm
+
+Protected horizMmPerPixel As double
+
+Protected horizScreenPixelCentre As Integer
+
+pixelHeight As integer
+    Number of pixels vertically on the screen
+
+pixelWidth As integer
+    Number of pixels across the screen
+
+Protected radToDeg As double = 57.29577951308
+    mRadToDeg = 180/gPi
+
+Protected vertMmPerPixel As double
+
+Protected vertScreenPixelCentre As Integer
+
+
+
+FUNCTIONS:
+
+Sub setupValues()
+  horizMmPerPixel = width/pixelWidth 
+  vertMmPerPixel = height/pixelHeight
+  horizScreenPixelCentre = pixelWidth/2
+  vertScreenPixelCentre = pixelHeight/2
+End Sub
+
+
+Function convertPixelsToAngle(pixelPosn as double, horizontal as boolean = TRUE) As double
+  // converts a location from pixels to degrees.
+  // Needs to know if the location is a horizontal or vertical one.
+  
+    if horizontal then
+    return atan((pixelPosn - horizScreenPixelCentre) * horizMmPerPixel / distance) * radToDeg
+  else
+    return atan((pixelPosn - vertScreenPixelCentre) * vertMmPerPixel / distance) * radToDeg * -1 // invert to take care of differing iView and Experimenter origins.
+  end if
+End Function
+
+
+Function convertAngleToPixels(angle as double, horizontal as boolean = TRUE) As double
+  // reverse calculates a location from degrees to pixels for 2D plotting.
+  // Needs to know if the location is a horizontal or vertical one.
+    
+  if horizontal then
+    return distance * tan(angle/radToDeg)/horizMmPerPixel + horizScreenPixelCentre
+  else
+    return vertScreenPixelCentre - distance * tan(angle/radToDeg)/vertMmPerPixel
+  end if
+End Function
+
+
+
